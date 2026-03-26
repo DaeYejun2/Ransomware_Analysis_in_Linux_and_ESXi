@@ -12,3 +12,12 @@
 3. ESXi VM & vCenter VM (샌드박스 & 모니터링)
    * ESXi VM: runner.sh가 실행되는 곳
      * runner.sh: auto_sandbox.py에 의해 ESXi로 전송되어 ESXi 내부에서 실행됨. ESXi 내부에서 샘플 실행, 샘플 실행 시간 측정, 랜섬노트 확인, 암호화된 파일 확인 등의 동작을 하고, ESXi 내부에 그것을 기록한 로그를 만듦. 만들어진 로그는 auto_sandbox.py에 의해 Proxmox host로 전송됨
+
+   * vCenter VM: ESXi의 상태를 상시 감시. 랜섬웨어가 실행될 때 발생하는 리소스 변화(가용성, 이벤트 로그 등)를 기록하여 다시 Proxmox Host에 전달한다.
+
+ 4. Workflow
+    1. Proxmox Host가 ESXi 스냅샷 상태로 롤백
+    2. Host -> Jump Host -> ESXi VM 순으로 랜섬웨어 파일을 전송
+    3. ESXi 내부에서 샘플이 가동. 동시에 vCenter는 ESXi의 성능 지표를 캡쳐
+    4. ESXi 내부의 암호화 결과 로그가 다시 역순으로 Host에 저장
+    5. 1번으로 돌아가 다음 샘플 테스트
